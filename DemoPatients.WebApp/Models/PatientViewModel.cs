@@ -58,7 +58,7 @@ namespace DemoPatients.WebApp.Models
         {
             get
             {
-                return string.Format("{0} {1} {2}", Civilite, Prenom, Nom.ToUpper());
+                return string.Format("{0} {1} {2}", Civilite, Prenom, Nom != null ? Nom.ToUpper() : Nom);
             }
         }
 

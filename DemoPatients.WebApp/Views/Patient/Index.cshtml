@@ -50,7 +50,7 @@
                     return;
                 }
 
-                $('#message-error, #message-success').hide(200, function () { $(this).children('div:first').html(''); });
+                $('#message-error, #message-success').hide(200).children('div:first').html('');
 
                 var button = $(this);
                 $.post(

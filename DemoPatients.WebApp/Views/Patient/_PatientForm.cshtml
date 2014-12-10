@@ -7,10 +7,7 @@
     @Html.EditorFor(m => m.Prenom)
     @Html.EditorFor(m => m.Nom)
     @Html.EditorFor(m => m.DateNaissance)
-    <div class="form-group">
-        @Html.LabelFor(m => m.Present)
-        @Html.EditorFor(m => m.Present)
-    </div>
+    @Html.EditorFor(m => m.Present)
     <button class="btn btn-primary">
         <span class="glyphicon glyphicon-save"></span>
         Enregistrer

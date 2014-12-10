@@ -33,7 +33,7 @@ namespace DemoPatients.WebApp.Controllers
         // GET: /Patient/Create
         public ActionResult Create()
         {
-            return View("Edit", new PatientViewModel());
+            return View("Create", new PatientViewModel());
         }
 
         // POST: /Patient/Create
@@ -51,7 +51,7 @@ namespace DemoPatients.WebApp.Controllers
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = string.Format("Une erreur est survenue lors de la création du patient {0} : {1}.", model.NomComplet, ex.Message);
-                return View("Edit", model);
+                return View("Create", model);
             }
         }
 
