@@ -5,7 +5,7 @@ using DemoPatients.Models;
 
 namespace DemoPatients.Data
 {
-    public class PatientRepository
+    public class PatientRepository : IPatientRepository
     {
         private static readonly List<Patient> Patients;
 

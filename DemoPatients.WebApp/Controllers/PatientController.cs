@@ -11,10 +11,21 @@ namespace DemoPatients.WebApp.Controllers
 {
     public class PatientController : Controller
     {
+        private readonly IPatientRepository _patientRepository;
+
+        public PatientController(IPatientRepository repo)
+        {
+            _patientRepository = repo;
+        }
+
+        public PatientController()
+        {
+            _patientRepository = new PatientRepository();
+        }
         // GET: /Patient/
         public ActionResult Index()
         {
-            PatientService service = new PatientService(new PatientRepository());
+            PatientService service = new PatientService(_patientRepository);
             List<PatientViewModel> model = service.GetPatients().Select(p => new PatientViewModel(p)).ToList();
             return View(model);
         }
@@ -31,7 +42,7 @@ namespace DemoPatients.WebApp.Controllers
         {
             try
             {
-                PatientService service = new PatientService(new PatientRepository());
+                PatientService service = new PatientService(_patientRepository);
                 Patient patient = model.ToPatient();
                 service.AddPatient(patient);
                 TempData["SuccessMessage"] = string.Format("Le patient {0} ({1}) a été créé avec succès.", model.NomComplet, patient.Id);
@@ -47,7 +58,7 @@ namespace DemoPatients.WebApp.Controllers
         // GET: /Patient/Edit/5
         public ActionResult Edit(int id)
         {
-            PatientService service = new PatientService(new PatientRepository());
+            PatientService service = new PatientService(_patientRepository);
             Patient patient = service.GetPatientById(id);
             if (patient != null)
                 return View(new PatientViewModel(patient));
@@ -61,7 +72,7 @@ namespace DemoPatients.WebApp.Controllers
         {
             try
             {
-                PatientService service = new PatientService(new PatientRepository());
+                PatientService service = new PatientService(_patientRepository);
                 service.UpdatePatient(id, patient.ToPatient());
                 TempData["SuccessMessage"] = string.Format("Le patient {0} ({1}) a été mis à jour avec succès.", patient.NomComplet, id);
                 return RedirectToAction("Index");
@@ -79,7 +90,7 @@ namespace DemoPatients.WebApp.Controllers
         {
             try
             {
-                PatientService service = new PatientService(new PatientRepository());
+                PatientService service = new PatientService(_patientRepository);
                 service.RemovePatient(id);
                 return Json(new { success = true });
             }
