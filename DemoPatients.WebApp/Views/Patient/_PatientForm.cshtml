@@ -1,0 +1,22 @@
+﻿@model PatientViewModel
+
+@using (Html.BeginForm(new { id = @Model.Id }))
+{
+    @*@Html.EditorFor(m => m.Civilite, "Enum")*@
+    @Html.EnumDropDownListFor(m => m.Civilite)
+    @Html.EditorFor(m => m.Prenom)
+    @Html.EditorFor(m => m.Nom)
+    @Html.EditorFor(m => m.DateNaissance)
+    <div class="form-group">
+        @Html.LabelFor(m => m.Present)
+        @Html.EditorFor(m => m.Present)
+    </div>
+    <button class="btn btn-primary">
+        <span class="glyphicon glyphicon-save"></span>
+        Enregistrer
+    </button>
+    <a class="btn btn-danger pull-right" href="@Url.Action("Index", "Patient")">
+        <span class="glyphicon glyphicon-ban-circle"></span>
+        Annuler
+    </a>
+}

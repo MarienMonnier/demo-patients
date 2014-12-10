@@ -1,0 +1,71 @@
+﻿@model List<PatientViewModel>
+
+@{
+    ViewBag.Title = "Mes patients";
+}
+
+<h2>Mes Patients</h2>
+
+<table class="table">
+    <tr>
+        <th>Nom</th>
+        <th>Age</th>
+        <th>Présent</th>
+        <th>Actions</th>
+    </tr>
+    @foreach (PatientViewModel patient in Model)
+    {
+        <tr>
+            <td>@patient.NomComplet</td>
+            <td>@patient.Age</td>
+            <td>
+                <input type="checkbox" checked="@patient.Present" disabled="disabled" />
+            </td>
+            <td>
+                <a href="@Url.Action("Edit", "Patient", new { id = patient.Id })" class="btn btn-primary">
+                    <span class="glyphicon glyphicon-edit"></span>
+                </a>
+                <button type="button" class="btn btn-danger delete-patient" data-patient-id="@patient.Id">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </button>
+            </td>
+        </tr>
+    }
+</table>
+
+<div class="text-center">
+    <a class="btn btn-success" href="@Url.Action("Create", "Patient")">
+        <span class="glyphicon glyphicon-plus"></span>
+        Créer un patient
+    </a>
+</div>
+
+
+@section scripts
+{
+    <script type="text/javascript">
+        $(function () {
+            $('.delete-patient').on('click', function () {
+                if (!confirm('Etes-vous sûr de vouloir supprimer ce patient ?')) {
+                    return;
+                }
+
+                $('#message-error, #message-success').hide(200, function () { $(this).children('div:first').html(''); });
+
+                var button = $(this);
+                $.post(
+                    '@Url.Action("Delete", "Patient")',
+                    { id: button.data('patient-id') },
+                    function(data) {
+                        if (data.success) {
+                            $('#message-success>div').html('Le patient a été supprimé avec succès.').parent().show(200);
+                            button.closest('tr').hide(200, function () { $(this).remove(); });
+                        } else {
+                            $('#message-error>div').html('Une erreur est survenue lors de la suppression du patient... ' + data.error).parent().show(200);
+                        }
+                    }
+                );
+            });
+        });
+    </script>
+}

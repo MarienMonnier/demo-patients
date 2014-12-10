@@ -1,0 +1,15 @@
+﻿@model Enum
+@{
+    var values = Enum.GetValues(Model.GetType()).Cast<Enum>();
+    var items = values.Select(v => new SelectListItem
+    {
+        Text = v.ToString(),
+        Value = v.ToString(),
+        Selected = v.Equals(Model)
+    });
+}
+
+<div class="form-group">
+    @Html.LabelFor(m => m)
+    @Html.DropDownListFor(m => m, items, new { @class= "form-control" })
+</div>

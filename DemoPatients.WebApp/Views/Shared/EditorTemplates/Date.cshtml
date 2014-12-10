@@ -1,0 +1,6 @@
+﻿@model DateTime?
+
+<div class="form-group">
+    @Html.LabelFor(m => m)
+    @Html.TextBoxFor(m => m, ViewData.ModelMetadata.DisplayFormatString, new { @class = "form-control", type = "date", title = ViewData.ModelMetadata.Description, placeholder = ViewData.ModelMetadata.Watermark })
+</div>
