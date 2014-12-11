@@ -113,8 +113,10 @@ namespace DemoPatients.WebApp.Controllers
 
         public ContentResult Filter()
         {
-            if (Session["cacherabsents"] == null) Session["cacherabsents"] = false;
-            Session["cacherabsents"] = !bool.Parse(Session["cacherabsents"].ToString());
+            if (Session["cacherabsents"] == null)
+                Session["cacherabsents"] = true;
+            else
+                Session["cacherabsents"] = !bool.Parse(Session["cacherabsents"].ToString());
 
             return Content("OK");
         }

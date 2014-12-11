@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Web;
 using System.Web.Helpers;
 using System.Web.Mvc;
 using System.Windows.Forms;
@@ -21,6 +22,7 @@ namespace DemoPatients.Tests
         private Mock<IPatientRepository> _repo;
         private Patient _patient;
         private Mock<ControllerContext> _context;
+        private Mock<HttpSessionStateBase> _session;
 
         // Initialize : Est appelé avant chaque appel à une méthode de test
         [TestInitialize]
@@ -38,7 +40,8 @@ namespace DemoPatients.Tests
             };
 
             _context = new Mock<ControllerContext>();
-            _context.Setup(c => c.HttpContext.Session[It.IsAny<string>()]).Returns(null);
+            _session = new Mock<HttpSessionStateBase>();
+            _context.Setup(c => c.HttpContext.Session).Returns(_session.Object);
 
             _controller.ControllerContext = _context.Object;
         }
@@ -142,8 +145,7 @@ namespace DemoPatients.Tests
             // Initialisation
             _patient.Present = true;
             _repo.Setup(r => r.GetPatients()).Returns(new List<Patient>() { _patient }.AsQueryable());
-            _context.Setup(c => c.HttpContext.Session[It.IsAny<string>()]).Returns("true");
-
+            _session.SetupGet(s => s[It.IsAny<string>()]).Returns("true");
             _controller.ControllerContext = _context.Object;
 
             // Exécution
@@ -159,8 +161,7 @@ namespace DemoPatients.Tests
             // Initialisation
             _patient.Present = false;
             _repo.Setup(r => r.GetPatients()).Returns(new List<Patient>() { _patient }.AsQueryable());
-            _context.Setup(c => c.HttpContext.Session[It.IsAny<string>()]).Returns("true");
-
+            _session.SetupGet(s => s[It.IsAny<string>()]).Returns("true");
             _controller.ControllerContext = _context.Object;
 
             // Exécution
@@ -185,7 +186,7 @@ namespace DemoPatients.Tests
         }
 
         [TestMethod]
-        public void Controller_Cannot_DisplayPatientNotPresentWithoutSessionVariable()
+        public void Controller_Can_DisplayPatientNotPresentWithoutSessionVariable()
         {
             // Initialisation
             _patient.Present = false;
@@ -196,6 +197,19 @@ namespace DemoPatients.Tests
 
             //  Vérification
             Assert.IsTrue((t.Model as List<PatientViewModel>).Any());
+        }
+
+        [TestMethod]
+        public void Controller_Can_InitSessionOnFilter()
+        {
+            int cc = 0;
+
+            _session.SetupSet(s => s["cacherabsents"] = It.IsAny<object>())
+                .Callback(() => cc++);
+
+            var t = _controller.Filter();
+            
+            Assert.IsTrue(cc > 0);
         }
 
         private static object GetReflectedProperty(object obj, string propertyName)
