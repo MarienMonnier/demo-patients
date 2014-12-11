@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Web.Helpers;
 using System.Web.Mvc;
 using DemoPatients.Data;
 using DemoPatients.Models;
@@ -6,6 +9,8 @@ using DemoPatients.WebApp.Controllers;
 using DemoPatients.WebApp.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace DemoPatients.Tests
 {
@@ -108,6 +113,33 @@ namespace DemoPatients.Tests
             // Vérification
             if (route != null) Assert.AreEqual("Index", route.RouteValues["action"]);
             else Assert.Fail("redirect n'est pas au format RedirectToRouteResult");
+        }
+
+        [TestMethod]
+        public void Controller_Cannot_DeleteOnFail()
+        {
+            // Initialisation
+            _repo.Setup(r => r.RemovePatient(It.IsAny<int>())).Throws(new Exception());
+
+            // Exécution
+            JsonResult result = _controller.Delete(0);
+
+            // Vérification
+            // Je n'ai pas trouvé de moyen plus direct pour lire le contenu d'un JsonResult pour l'instant.
+            bool data = (bool) GetReflectedProperty(result.Data, "success");
+            Assert.IsFalse(data);
+        }
+
+        private static object GetReflectedProperty(object obj, string propertyName)
+        {
+            PropertyInfo property = obj.GetType().GetProperty(propertyName);
+
+            if (property == null)
+            {
+                return null;
+            }
+
+            return property.GetValue(obj, null);
         }
     }
 }
