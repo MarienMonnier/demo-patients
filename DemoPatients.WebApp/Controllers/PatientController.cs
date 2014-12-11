@@ -26,7 +26,18 @@ namespace DemoPatients.WebApp.Controllers
         public ActionResult Index()
         {
             PatientService service = new PatientService(_patientRepository);
+
+            string optimize = HttpContext.Session["cacherabsents"] == null
+                ? "false"
+                : HttpContext.Session["cacherabsents"].ToString();
+
             List<PatientViewModel> model = service.GetPatients().Select(p => new PatientViewModel(p)).ToList();
+
+            if (optimize != null && bool.Parse(optimize))
+            {
+                model = model.Where(m => m.Present).ToList();
+            }
+
             return View(model);
         }
 
@@ -98,6 +109,14 @@ namespace DemoPatients.WebApp.Controllers
             {
                 return Json(new { success = false, error = ex.Message });
             }
+        }
+
+        public ContentResult Filter()
+        {
+            if (Session["cacherabsents"] == null) Session["cacherabsents"] = false;
+            Session["cacherabsents"] = !bool.Parse(Session["cacherabsents"].ToString());
+
+            return Content("OK");
         }
     }
 }

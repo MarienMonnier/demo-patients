@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Web.Helpers;
 using System.Web.Mvc;
+using System.Windows.Forms;
 using DemoPatients.Data;
 using DemoPatients.Models;
 using DemoPatients.WebApp.Controllers;
 using DemoPatients.WebApp.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace DemoPatients.Tests
 {
@@ -20,6 +20,7 @@ namespace DemoPatients.Tests
         private PatientController _controller;
         private Mock<IPatientRepository> _repo;
         private Patient _patient;
+        private Mock<ControllerContext> _context;
 
         // Initialize : Est appelé avant chaque appel à une méthode de test
         [TestInitialize]
@@ -35,13 +36,18 @@ namespace DemoPatients.Tests
                 Prenom = "TestP",
                 Present = false
             };
+
+            _context = new Mock<ControllerContext>();
+            _context.Setup(c => c.HttpContext.Session[It.IsAny<string>()]).Returns(null);
+
+            _controller.ControllerContext = _context.Object;
         }
 
         // CleanUp : Est appelé après chaque appel à une méthode de test
         [TestCleanup]
         public void Clean()
         {
-            
+
         }
 
         [TestMethod, Ignore]
@@ -126,8 +132,70 @@ namespace DemoPatients.Tests
 
             // Vérification
             // Je n'ai pas trouvé de moyen plus direct pour lire le contenu d'un JsonResult pour l'instant.
-            bool data = (bool) GetReflectedProperty(result.Data, "success");
+            bool data = (bool)GetReflectedProperty(result.Data, "success");
             Assert.IsFalse(data);
+        }
+
+        [TestMethod]
+        public void Controller_Can_DisplayPatientPresentOnSessionVariable()
+        {
+            // Initialisation
+            _patient.Present = true;
+            _repo.Setup(r => r.GetPatients()).Returns(new List<Patient>() { _patient }.AsQueryable());
+            _context.Setup(c => c.HttpContext.Session[It.IsAny<string>()]).Returns("true");
+
+            _controller.ControllerContext = _context.Object;
+
+            // Exécution
+            var t = _controller.Index() as ViewResult;
+
+            //  Vérification
+            Assert.IsTrue((t.Model as List<PatientViewModel>).Any());
+        }
+
+        [TestMethod]
+        public void Controller_Can_DisplayPatientNotPresentOnSessionVariable()
+        {
+            // Initialisation
+            _patient.Present = false;
+            _repo.Setup(r => r.GetPatients()).Returns(new List<Patient>() { _patient }.AsQueryable());
+            _context.Setup(c => c.HttpContext.Session[It.IsAny<string>()]).Returns("true");
+
+            _controller.ControllerContext = _context.Object;
+
+            // Exécution
+            var t = _controller.Index() as ViewResult;
+
+            //  Vérification
+            Assert.IsFalse((t.Model as List<PatientViewModel>).Any());
+        }
+
+        [TestMethod]
+        public void Controller_Can_DisplayPatientPresentWithoutSessionVariable()
+        {
+            // Initialisation
+            _patient.Present = true;
+            _repo.Setup(r => r.GetPatients()).Returns(new List<Patient>() { _patient }.AsQueryable());
+
+            // Exécution
+            var view = _controller.Index() as ViewResult;
+
+            //  Vérification
+            Assert.IsTrue((view.Model as List<PatientViewModel>).Any());
+        }
+
+        [TestMethod]
+        public void Controller_Cannot_DisplayPatientNotPresentWithoutSessionVariable()
+        {
+            // Initialisation
+            _patient.Present = false;
+            _repo.Setup(r => r.GetPatients()).Returns(new List<Patient>() { _patient }.AsQueryable());
+
+            // Exécution
+            var t = _controller.Index() as ViewResult;
+
+            //  Vérification
+            Assert.IsTrue((t.Model as List<PatientViewModel>).Any());
         }
 
         private static object GetReflectedProperty(object obj, string propertyName)

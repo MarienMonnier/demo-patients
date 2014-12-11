@@ -13,7 +13,7 @@
 }
 
 <h2>Mes Patients</h2>
-
+<p><input type="checkbox" id="hideabsents" checked="@Session["cacherabsents"]"/><span>Ne pas afficher les absents</span></p>
 <table class="table">
     <tr>
         <th>Nom</th>
@@ -53,6 +53,10 @@
 {
     <script type="text/javascript">
         $(function () {
+            $("#hideabsents").on('click', function() {
+                $.post(
+                    '@Url.Action("Filter", "Patient")');
+            });
             $('.delete-patient').on('click', function () {
                 if (!confirm('Etes-vous sûr de vouloir supprimer ce patient ?')) {
                     return;
@@ -64,7 +68,7 @@
                 $.post(
                     '@Url.Action("Delete", "Patient")',
                     { id: button.data('patient-id') },
-                    function(data) {
+                    function (data) {
                         if (data.success) {
                             $('#message-success>div').html('Le patient a été supprimé avec succès.').parent().show(200);
                             button.closest('tr').hide(200, function () { $(this).remove(); });
@@ -80,7 +84,7 @@
                 $.post(
                     '@Url.Action("HideMessage", "Cookie")',
                     null,
-                    function(data) {
+                    function (data) {
                         if (data != "OK") {
                             $('#message-error>div').html('Une erreur est survenue lors de la requête... ').parent().show(200);
                         }
