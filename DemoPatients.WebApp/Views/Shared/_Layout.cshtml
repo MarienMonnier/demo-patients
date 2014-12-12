@@ -4,9 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Base Patients</title>
-    <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
-    <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <script src="~/Scripts/modernizr-2.6.2.js"></script>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
     @RenderSection("styles", false)
 </head>
 <body>
@@ -21,8 +20,7 @@
                 @Html.ActionLink("Ma base de données de Patients", "Index", "Patient", null, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                </ul>
+                @Html.Partial("_Menu")
                 @Html.Partial("_LoginPartial")
             </div>
         </div>
@@ -55,9 +53,9 @@
             <p>&copy; @DateTime.Now.Year - Soft'It</p>
         </footer>
     </div>
-
-    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
-    <script src="~/Scripts/bootstrap.min.js"></script>
+    
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
     <script type="text/javascript">
         $(function() {
             if ($('#message-success>div').html().trim().length)

@@ -32,12 +32,15 @@ namespace DemoPatients.WebApp.Models
         [Display(Name = "Civilité", Prompt = "Sélectionnez une civilité")]
         public Civilite Civilite { get; set; }
 
+        [Required]
         [Display(Name = "Prénom", Prompt = "Entrez un prénom")]
         public string Prenom { get; set; }
 
+        [Required]
         [Display(Name = "Nom", Prompt = "Entrez un nom")]
         public string Nom { get; set; }
 
+        [Required]
         [DataType(DataType.Date)]
         [Display(Name = "Date de naisance", Prompt = "Entrez sa date de naissance")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]

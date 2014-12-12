@@ -7,3 +7,7 @@
 <h2>Patient @Model.NomComplet</h2>
 
 @Html.Partial("_PatientForm", Model)
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

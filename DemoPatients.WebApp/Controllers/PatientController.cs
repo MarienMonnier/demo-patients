@@ -60,11 +60,17 @@ namespace DemoPatients.WebApp.Controllers
         {
             try
             {
-                PatientService service = new PatientService(_patientRepository);
-                Patient patient = model.ToPatient();
-                service.AddPatient(patient);
-                TempData["SuccessMessage"] = string.Format("Le patient {0} ({1}) a été créé avec succès.", model.NomComplet, patient.Id);
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    PatientService service = new PatientService(_patientRepository);
+                    Patient patient = model.ToPatient();
+                    service.AddPatient(patient);
+                    TempData["SuccessMessage"] = string.Format("Le patient {0} ({1}) a été créé avec succès.", model.NomComplet, patient.Id);
+                    return RedirectToAction("Index");
+                }
+                
+                TempData["ErrorMessage"] = "Veuillez remplir les champs obligatoires.";
+                return View("Create", model);
             }
             catch (Exception ex)
             {
@@ -92,10 +98,16 @@ namespace DemoPatients.WebApp.Controllers
         {
             try
             {
-                PatientService service = new PatientService(_patientRepository);
-                service.UpdatePatient(id, patient.ToPatient());
-                TempData["SuccessMessage"] = string.Format("Le patient {0} ({1}) a été mis à jour avec succès.", patient.NomComplet, id);
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    PatientService service = new PatientService(_patientRepository);
+                    service.UpdatePatient(id, patient.ToPatient());
+                    TempData["SuccessMessage"] = string.Format("Le patient {0} ({1}) a été mis à jour avec succès.", patient.NomComplet, id);
+                    return RedirectToAction("Index");
+                }
+
+                TempData["ErrorMessage"] = "Veuillez remplir les champs obligatoires.";
+                return View(patient);
             }
             catch (Exception ex)
             {

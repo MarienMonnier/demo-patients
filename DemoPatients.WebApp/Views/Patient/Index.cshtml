@@ -4,14 +4,6 @@
     ViewBag.Title = "Mes patients";
 }
 
-@if (!(Session["HasHiddenMessage"] as bool?).GetValueOrDefault(false))
-{
-    <div id="message-welcome" class="alert alert-warning">
-        <button type="button" class="close"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        Bienvenue sur notre nouveau site de gestion de patients. Pour ne plus recevoir ce message, fermez-le.
-    </div>
-}
-
 <h2>Mes Patients</h2>
 
 <div class="form-group">
@@ -80,18 +72,6 @@
                         }
                     }
                 );
-            });
-
-            $('#message-welcome button').on('click', function(e) {
-                e.preventDefault();
-                $.post(
-                    '@Url.Action("HideMessage", "Cookie")',
-                    null,
-                    function(data) {
-                        if (data != "OK") {
-                            $('#message-error > div').html('Une erreur est survenue lors de la requête... ').parent().show(200);
-                        }
-                    });
             });
         });
     </script>

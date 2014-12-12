@@ -22,9 +22,18 @@ namespace DemoPatients.WebApp
             });
 
             TagBuilder builder = new TagBuilder("div");
-            builder.MergeAttribute("class", "form-group");
+            builder.AddCssClass("form-group");
             builder.InnerHtml = html.LabelFor(expression).ToString();
             builder.InnerHtml += html.DropDownListFor(expression, items, new { @class = "form-control" });
+            return MvcHtmlString.Create(builder.ToString());
+        }
+
+        public static IHtmlString BootstrapTextBoxFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
+        {
+            TagBuilder builder = new TagBuilder("div");
+            builder.AddCssClass("form-group");
+            builder.InnerHtml = html.LabelFor(expression).ToString();
+            builder.InnerHtml += html.TextBoxFor(expression, new { @class = "form-control" });
             return MvcHtmlString.Create(builder.ToString());
         }
     }

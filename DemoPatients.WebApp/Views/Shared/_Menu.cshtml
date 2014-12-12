@@ -1,0 +1,22 @@
+﻿<ul class="nav navbar-nav">
+    @MenuItem("Index", "Patient", "Mes Patients")
+    @if (User.Identity.IsAuthenticated && User.IsInRole("Superviseur"))
+    {
+        @MenuItem("Create", "Patient", "Créer patient")
+    }
+</ul>
+
+@helper MenuItem(string action, string controller, string text)
+{
+    <li class="@IsActive(action, controller)"><a href="@Url.Action(action, controller)">@text</a></li>
+}
+
+@functions
+{
+    string IsActive(string action, string controller)
+    {
+        return ViewContext.RouteData.Values["controller"].ToString() == controller && ViewContext.RouteData.Values["action"].ToString() == action
+                   ? "active"
+                   : null;
+    }
+}
