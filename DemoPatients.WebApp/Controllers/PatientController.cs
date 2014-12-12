@@ -9,6 +9,7 @@ using DemoPatients.WebApp.Models;
 
 namespace DemoPatients.WebApp.Controllers
 {
+    [Authorize(Roles = "Administrator")]
     public class PatientController : Controller
     {
         private readonly IPatientRepository _patientRepository;
@@ -42,6 +43,7 @@ namespace DemoPatients.WebApp.Controllers
         }
 
         // GET: /Patient/Create
+        //[Authorize(Roles = "Administrator")]
         public ActionResult Create()
         {
             return View("Create", new PatientViewModel());

@@ -208,7 +208,7 @@ namespace DemoPatients.Tests
                 .Callback(() => cc++);
 
             var t = _controller.Filter();
-            
+
             Assert.IsTrue(cc > 0);
         }
 
