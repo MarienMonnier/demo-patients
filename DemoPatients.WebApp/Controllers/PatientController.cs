@@ -9,6 +9,7 @@ using DemoPatients.WebApp.Models;
 
 namespace DemoPatients.WebApp.Controllers
 {
+    //[Authorize(Roles = "Administrator")]
     public class PatientController : Controller
     {
         private readonly IPatientRepository _patientRepository;

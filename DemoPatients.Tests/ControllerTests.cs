@@ -29,6 +29,7 @@ namespace DemoPatients.Tests
         public void Init()
         {
             _repo = new Mock<IPatientRepository>(); // <-- Dummy
+
             _controller = new PatientController(_repo.Object);
             _patient = new Patient()
             {
@@ -39,7 +40,7 @@ namespace DemoPatients.Tests
                 Present = false
             };
 
-            _context = new Mock<ControllerContext>();
+            _context = new Mock<ControllerContext>();   // <-- Je peux doubler une classe
             _session = new Mock<HttpSessionStateBase>();
             _context.Setup(c => c.HttpContext.Session).Returns(_session.Object);
 
@@ -145,7 +146,7 @@ namespace DemoPatients.Tests
             // Initialisation
             _patient.Present = true;
             _repo.Setup(r => r.GetPatients()).Returns(new List<Patient>() { _patient }.AsQueryable());
-            _session.SetupGet(s => s[It.IsAny<string>()]).Returns("true");
+            _session.SetupGet(s => s[It.IsAny<string>()]).Returns(true);
             _controller.ControllerContext = _context.Object;
 
             // Exécution
@@ -161,7 +162,7 @@ namespace DemoPatients.Tests
             // Initialisation
             _patient.Present = false;
             _repo.Setup(r => r.GetPatients()).Returns(new List<Patient>() { _patient }.AsQueryable());
-            _session.SetupGet(s => s[It.IsAny<string>()]).Returns("true");
+            _session.SetupGet(s => s[It.IsAny<string>()]).Returns(true);
             _controller.ControllerContext = _context.Object;
 
             // Exécution
@@ -208,7 +209,7 @@ namespace DemoPatients.Tests
                 .Callback(() => cc++);
 
             var t = _controller.Filter();
-            
+
             Assert.IsTrue(cc > 0);
         }
 
