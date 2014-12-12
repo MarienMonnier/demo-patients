@@ -13,51 +13,54 @@
 }
 
 <h2>Mes Patients</h2>
-<p><input type="checkbox" id="hideabsents" checked="@Session["cacherabsents"]"/><span>Ne pas afficher les absents</span></p>
-<table class="table">
-    <tr>
-        <th>Nom</th>
-        <th>Age</th>
-        <th>Présent</th>
-        <th>Actions</th>
-    </tr>
-    @foreach (PatientViewModel patient in Model)
-    {
-        <tr>
-            <td>@patient.NomComplet</td>
-            <td>@patient.Age</td>
-            <td>
-                <input type="checkbox" checked="@patient.Present" disabled="disabled" />
-            </td>
-            <td>
-                <a href="@Url.Action("Edit", "Patient", new { id = patient.Id })" class="btn btn-primary">
-                    <span class="glyphicon glyphicon-edit"></span>
-                </a>
-                <button type="button" class="btn btn-danger delete-patient" data-patient-id="@patient.Id">
-                    <span class="glyphicon glyphicon-remove"></span>
-                </button>
-            </td>
-        </tr>
-    }
-</table>
 
-<div class="text-center">
-    <a class="btn btn-success" href="@Url.Action("Create", "Patient")">
-        <span class="glyphicon glyphicon-plus"></span>
-        Créer un patient
-    </a>
+<div class="form-group">
+    <label>
+        <input type="checkbox" id="hideabsents" checked="@Session["cacherabsents"]"/>
+        Ne pas afficher les absents
+    </label>
 </div>
 
+<div id="patient-list">
+    @Html.Partial("_PatientList", Model)
+</div>
+
+@if (User.Identity.IsAuthenticated && User.IsInRole("Superviseur"))
+{
+    <div class="text-center">
+        <a class="btn btn-success" href="@Url.Action("Create", "Patient")">
+            <span class="glyphicon glyphicon-plus"></span>
+            Créer un patient
+        </a>
+    </div>
+}
 
 @section scripts
 {
     <script type="text/javascript">
-        $(function () {
-            $("#hideabsents").on('click', function() {
+        $(function() {
+            $("#hideabsents").on('click', function (e) {
+                var cb = $(this);
+                cb.prop('disabled', true);
                 $.post(
-                    '@Url.Action("Filter", "Patient")');
+                    '@Url.Action("Filter", "Patient")',
+                    {},
+                    function (data) {
+                        cb.prop('disabled', false);
+                        if (data == "OK") {
+                            $.get(
+                                '@Url.Action("List", "Patient")',
+                                {},
+                                function (listData) {
+                                    $('#patient-list').html(listData);
+                                }
+                            );
+                        }
+                    }
+                );
             });
-            $('.delete-patient').on('click', function () {
+
+            $('.delete-patient').on('click', function() {
                 if (!confirm('Etes-vous sûr de vouloir supprimer ce patient ?')) {
                     return;
                 }
@@ -68,25 +71,25 @@
                 $.post(
                     '@Url.Action("Delete", "Patient")',
                     { id: button.data('patient-id') },
-                    function (data) {
+                    function(data) {
                         if (data.success) {
-                            $('#message-success>div').html('Le patient a été supprimé avec succès.').parent().show(200);
-                            button.closest('tr').hide(200, function () { $(this).remove(); });
+                            $('#message-success > div').html('Le patient a été supprimé avec succès.').parent().show(200);
+                            button.closest('tr').hide(200, function() { $(this).remove(); });
                         } else {
-                            $('#message-error>div').html('Une erreur est survenue lors de la suppression du patient... ' + data.error).parent().show(200);
+                            $('#message-error > div').html('Une erreur est survenue lors de la suppression du patient... ' + data.error).parent().show(200);
                         }
                     }
                 );
             });
 
-            $('#message-welcome button').on('click', function (e) {
+            $('#message-welcome button').on('click', function(e) {
                 e.preventDefault();
                 $.post(
                     '@Url.Action("HideMessage", "Cookie")',
                     null,
-                    function (data) {
+                    function(data) {
                         if (data != "OK") {
-                            $('#message-error>div').html('Une erreur est survenue lors de la requête... ').parent().show(200);
+                            $('#message-error > div').html('Une erreur est survenue lors de la requête... ').parent().show(200);
                         }
                     });
             });

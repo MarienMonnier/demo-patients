@@ -42,11 +42,11 @@ namespace DemoPatients.Tests
         }
 
         [TestMethod]
-        public void Controller_NeedsAuthorize()
+        public void Controller_DoesntNeedAuthorize()
         {
             Type controllerType = _controller.GetType();
 
-            Assert.IsTrue(TypeContainsAuthorizeAttribute(controllerType));
+            Assert.IsFalse(TypeContainsAuthorizeAttribute(controllerType));
         }
 
         [TestMethod]
@@ -54,15 +54,16 @@ namespace DemoPatients.Tests
         {
             Type controllerType = _controller.GetType();
 
-            Assert.IsTrue(MethodContainsAuthorizeAttribute(_cont, "Create", Type.EmptyTypes));
+            Assert.IsTrue(MethodContainsAuthorizeAttribute(controllerType, "Create", Type.EmptyTypes));
         }
+        
 
         [TestMethod]
         public void Controller_Can_BlockCreationIfNotAdmin()
         {
             Type controllerType = _controller.GetType();
 
-            Assert.IsTrue(MethodOrTypeContainsAuthorizeRoles(controllerType, "Create", Type.EmptyTypes, "Administrator"));
+            Assert.IsTrue(MethodOrTypeContainsAuthorizeRoles(controllerType, "Create", Type.EmptyTypes, "Superviseur"));
         }
 
         private static bool MethodOrTypeContainsAuthorizeRoles(Type controllerType, string methodName, Type[] methodSignature, params string[] roles)

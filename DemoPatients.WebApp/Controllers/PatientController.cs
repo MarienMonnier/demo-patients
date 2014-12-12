@@ -9,7 +9,7 @@ using DemoPatients.WebApp.Models;
 
 namespace DemoPatients.WebApp.Controllers
 {
-    [Authorize(Roles = "Administrator")]
+    //[Authorize(Roles = "Administrator")]
     public class PatientController : Controller
     {
         private readonly IPatientRepository _patientRepository;
@@ -23,27 +23,32 @@ namespace DemoPatients.WebApp.Controllers
         {
             _patientRepository = new PatientRepository();
         }
+
         // GET: /Patient/
         public ActionResult Index()
         {
-            PatientService service = new PatientService(_patientRepository);
-
-            string optimize = HttpContext.Session["cacherabsents"] == null
-                ? "false"
-                : HttpContext.Session["cacherabsents"].ToString();
-
-            List<PatientViewModel> model = service.GetPatients().Select(p => new PatientViewModel(p)).ToList();
-
-            if (optimize != null && bool.Parse(optimize))
-            {
-                model = model.Where(m => m.Present).ToList();
-            }
+            List<PatientViewModel> model = GetPatients();
 
             return View(model);
         }
 
+        private List<PatientViewModel> GetPatients()
+        {
+            PatientService service = new PatientService(_patientRepository);
+
+            bool? optimize = (bool?)HttpContext.Session["cacherabsents"];
+
+            List<PatientViewModel> model = service.GetPatients().Select(p => new PatientViewModel(p)).ToList();
+
+            if (optimize.GetValueOrDefault(false))
+            {
+                model = model.Where(m => m.Present).ToList();
+            }
+            return model;
+        }
+
         // GET: /Patient/Create
-        //[Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Superviseur")]
         public ActionResult Create()
         {
             return View("Create", new PatientViewModel());
@@ -51,6 +56,7 @@ namespace DemoPatients.WebApp.Controllers
 
         // POST: /Patient/Create
         [HttpPost]
+        [Authorize(Roles = "Superviseur")]
         public ActionResult Create(PatientViewModel model)
         {
             try
@@ -69,6 +75,7 @@ namespace DemoPatients.WebApp.Controllers
         }
 
         // GET: /Patient/Edit/5
+        [Authorize(Roles = "Superviseur")]
         public ActionResult Edit(int id)
         {
             PatientService service = new PatientService(_patientRepository);
@@ -81,6 +88,7 @@ namespace DemoPatients.WebApp.Controllers
 
         // POST: /Patient/Edit/5
         [HttpPost]
+        [Authorize(Roles = "Superviseur")]
         public ActionResult Edit(int id, PatientViewModel patient)
         {
             try
@@ -99,6 +107,7 @@ namespace DemoPatients.WebApp.Controllers
 
         // POST: /Patient/Delete/5
         [HttpPost]
+        [Authorize(Roles = "Superviseur")]
         public JsonResult Delete(int id)
         {
             try
@@ -118,9 +127,15 @@ namespace DemoPatients.WebApp.Controllers
             if (Session["cacherabsents"] == null)
                 Session["cacherabsents"] = true;
             else
-                Session["cacherabsents"] = !bool.Parse(Session["cacherabsents"].ToString());
+                Session["cacherabsents"] = !(bool)Session["cacherabsents"];
 
             return Content("OK");
+        }
+
+        public PartialViewResult List()
+        {
+            List<PatientViewModel> patients = GetPatients();
+            return PartialView("_PatientList", patients);
         }
     }
 }

@@ -1,0 +1,31 @@
+﻿@model List<PatientViewModel>
+
+<table class="table">
+    <tr>
+        <th>Nom</th>
+        <th>Age</th>
+        <th>Présent</th>
+        <th>Actions</th>
+    </tr>
+    @foreach (PatientViewModel patient in Model)
+    {
+        <tr>
+            <td>@patient.NomComplet</td>
+            <td>@patient.Age</td>
+            <td>
+                <input type="checkbox" checked="@patient.Present" disabled="disabled" />
+            </td>
+            <td>
+                @if (User.Identity.IsAuthenticated && User.IsInRole("Superviseur"))
+                {
+                    <a href="@Url.Action("Edit", "Patient", new { id = patient.Id })" class="btn btn-primary">
+                        <span class="glyphicon glyphicon-edit"></span>
+                    </a>
+                    <button type="button" class="btn btn-danger delete-patient" data-patient-id="@patient.Id">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </button>
+                }
+            </td>
+        </tr>
+    }
+</table>

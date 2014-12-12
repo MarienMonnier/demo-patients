@@ -14,6 +14,12 @@ namespace DemoPatients.WebApp
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
+                "ApiPatient",
+                "api/{action}/{id}",
+                new { controller = "ApiPatient", action = "Patients", id = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Patient", action = "Index", id = UrlParameter.Optional }
