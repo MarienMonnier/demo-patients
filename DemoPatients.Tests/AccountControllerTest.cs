@@ -78,7 +78,6 @@ namespace DemoPatients.Tests
 
             Assert.AreEqual(t, "Index");
             Assert.AreEqual(y, "Patient");
-            //Assert.AreEqual(_loginModel, view.Model);
         }
     }
 }
