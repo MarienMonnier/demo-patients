@@ -7,9 +7,9 @@ namespace DemoPatients.Services
 {
     public class PatientService
     {
-        private readonly IPatientRepository _repository;
+        private readonly PatientRepository _repository;
 
-        public PatientService(IPatientRepository repository)
+        public PatientService(PatientRepository repository)
         {
             _repository = repository;
         }

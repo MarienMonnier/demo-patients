@@ -12,18 +12,6 @@ namespace DemoPatients.WebApp.Controllers
     //[Authorize(Roles = "Administrator")]
     public class PatientController : Controller
     {
-        private readonly IPatientRepository _patientRepository;
-
-        public PatientController(IPatientRepository repo)
-        {
-            _patientRepository = repo;
-        }
-
-        public PatientController()
-        {
-            _patientRepository = new PatientRepository();
-        }
-
         // GET: /Patient/
         public ActionResult Index()
         {
@@ -34,7 +22,7 @@ namespace DemoPatients.WebApp.Controllers
 
         private List<PatientViewModel> GetPatients()
         {
-            PatientService service = new PatientService(_patientRepository);
+            PatientService service = new PatientService(new PatientRepository());
 
             bool? optimize = (bool?)HttpContext.Session["cacherabsents"];
 
@@ -63,7 +51,7 @@ namespace DemoPatients.WebApp.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    PatientService service = new PatientService(_patientRepository);
+                    PatientService service = new PatientService(new PatientRepository());
                     Patient patient = model.ToPatient();
                     service.AddPatient(patient);
                     TempData["SuccessMessage"] = string.Format("Le patient {0} ({1}) a été créé avec succès.", model.NomComplet, patient.Id);
@@ -84,7 +72,7 @@ namespace DemoPatients.WebApp.Controllers
         [Authorize(Roles = "Superviseur")]
         public ActionResult Edit(int id)
         {
-            PatientService service = new PatientService(_patientRepository);
+            PatientService service = new PatientService(new PatientRepository());
             Patient patient = service.GetPatientById(id);
             if (patient != null)
                 return View(new PatientViewModel(patient));
@@ -101,7 +89,7 @@ namespace DemoPatients.WebApp.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    PatientService service = new PatientService(_patientRepository);
+                    PatientService service = new PatientService(new PatientRepository());
                     service.UpdatePatient(id, patient.ToPatient());
                     TempData["SuccessMessage"] = string.Format("Le patient {0} ({1}) a été mis à jour avec succès.", patient.NomComplet, id);
                     return RedirectToAction("Index");
@@ -124,7 +112,7 @@ namespace DemoPatients.WebApp.Controllers
         {
             try
             {
-                PatientService service = new PatientService(_patientRepository);
+                PatientService service = new PatientService(new PatientRepository());
                 service.RemovePatient(id);
                 return Json(new { success = true });
             }

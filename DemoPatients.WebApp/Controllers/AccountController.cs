@@ -14,8 +14,6 @@ namespace DemoPatients.WebApp.Controllers
     [Authorize]
     public class AccountController : Controller
     {
-        private IAuthenticationManager _authenticationManager;
-
         public AccountController()
             : this(new StaticUserManager(new StaticUserStore()))
         {
@@ -24,12 +22,6 @@ namespace DemoPatients.WebApp.Controllers
         public AccountController(StaticUserManager userManager)
         {
             UserManager = userManager;
-        }
-
-        public AccountController(StaticUserManager userManager, IAuthenticationManager aManager)
-            : this(userManager)
-        {
-            _authenticationManager = aManager;
         }
 
         public StaticUserManager UserManager { get; private set; }
@@ -83,7 +75,7 @@ namespace DemoPatients.WebApp.Controllers
         private IAuthenticationManager AuthenticationManager
         {
             get {
-                return _authenticationManager ?? (_authenticationManager = HttpContext.GetOwinContext().Authentication);
+                return HttpContext.GetOwinContext().Authentication;
             }
         }
 
